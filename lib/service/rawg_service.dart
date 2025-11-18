@@ -27,8 +27,6 @@ class RawgService {
         '$baseUrl/games?key=$apiKey&page=$page${search != null ? '&search=$search' : ''}${platforms != null ? '&platforms=$platforms' : ''}',
       );
 
-      print(uri);
-
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {

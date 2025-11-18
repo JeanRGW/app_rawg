@@ -10,6 +10,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final RawgService rawgService = RawgService();
+  final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _games = [];
 
   int _page = 1;
@@ -20,6 +21,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchGames();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _fetchGames();
+      }
+    });
   }
 
   Future<void> _fetchGames() async {
@@ -67,12 +75,28 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.blueGrey[800],
       appBar: AppBar(
-        title: Text("App RAWG"),
+        centerTitle: true,
+        title: Text(
+          "RAWG",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontSize: 24,
+            letterSpacing: 5,
+          ),
+        ),
         backgroundColor: Colors.blueGrey[900],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.elliptical(40, 10),
+          ),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(8.0),
-        child: _isLoading ? _loadingAnimation() : _gamesGrid(),
+        child: _isLoading && _games.isEmpty
+            ? _loadingAnimation()
+            : _gamesGrid(),
       ),
     );
   }
@@ -83,20 +107,41 @@ class _HomePageState extends State<HomePage> {
 
   Widget _gamesGrid() {
     return GridView.builder(
+      controller: _scrollController,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
       ),
-      itemCount: _games.length,
+      itemCount: _games.length + 1,
       itemBuilder: (context, index) {
+        if (index == _games.length) {
+          return _hasMore
+              ? Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : SizedBox.shrink();
+        }
+
         final game = _games[index];
         final imageUrl = game['background_image'];
 
         return Card(
           color: Colors.blueGrey[700],
+          elevation: 6,
+          shadowColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.black.withAlpha(70), width: 1.2),
+          ),
+          clipBehavior: Clip.antiAlias,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9,
@@ -109,32 +154,59 @@ class _HomePageState extends State<HomePage> {
                               fit: BoxFit.cover,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    } else {
-                                      return _loadingAnimation();
-                                    }
+                                    if (loadingProgress == null) return child;
+                                    return _loadingAnimation();
                                   },
                             )
                           : _placeholderImage(),
                     ),
 
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withAlpha(50),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
                     Positioned(
-                      top: 3,
-                      right: 3,
+                      top: 6,
+                      right: 6,
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 2,
-                          vertical: 1,
+                          horizontal: 4,
+                          vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(4),
+                          color: Colors.black.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: Colors.white.withAlpha(80),
+                            width: 1,
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Text('${game['rating'] ?? 'N/A'}'),
-                            Icon(Icons.star, size: 14, color: Colors.amber),
+                            Text(
+                              '${game['rating'] ?? 'N/A'}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            Icon(
+                              Icons.star,
+                              size: 16,
+                              color: Colors.amber[800],
+                            ),
                           ],
                         ),
                       ),
@@ -142,25 +214,42 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              SizedBox(height: 8),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    game['name'] ?? 'Nome Desconhecido',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Text(
+                  game['name'] ?? 'Nome Desconhecido',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    height: 1.15,
+                  ),
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.withAlpha(60),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Colors.black.withAlpha(60),
+                      width: 1,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
+                  child: Text(
                     '${game['released'] ?? 'sem data.'}',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    textAlign: TextAlign.center,
                   ),
-                ],
+                ),
               ),
             ],
           ),
