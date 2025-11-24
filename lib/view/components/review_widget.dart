@@ -213,16 +213,19 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                                   TextButton(
                                     child: Text(
                                       "Cancelar",
-                                      style: TextStyle(color: Colors.white54),
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                     onPressed: () => Navigator.pop(ctx, false),
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.redAccent,
+                                      backgroundColor: Colors.redAccent[700],
                                     ),
                                     onPressed: () => Navigator.pop(ctx, true),
-                                    child: Text("Excluir"),
+                                    child: Text(
+                                      "Excluir",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ],
                               ),
