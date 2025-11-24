@@ -135,11 +135,6 @@ class _HomePageState extends State<HomePage> {
                     icon: Icon(Icons.filter_alt),
                     color: Colors.white,
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.sort),
-                    color: Colors.white,
-                  ),
                 ],
               ),
             ),
@@ -172,12 +167,10 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        // Temporary local selections
         final selectedPlatforms = <GamePlatform>{};
         SortParam? selectedSort = _searchParams.sortBy;
         bool descending = _searchParams.descending ?? false;
 
-        // prefill selections
         if (_searchParams.platforms != null) {
           selectedPlatforms.addAll(_searchParams.platforms!);
         }
@@ -186,10 +179,12 @@ class _HomePageState extends State<HomePage> {
           builder: (context, setStateSB) {
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+                bottom: MediaQuery.of(context)
+                    .viewInsets
+                    .bottom, // Padding dinâmico, para teclado / botões do sistema
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.min, // Ocupar só o necessário
                 children: [
                   const SizedBox(height: 12),
                   Container(
@@ -207,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Filters',
+                          'Filtros',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -216,21 +211,17 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Platforms
+                        // Plataformas
                         const Text(
-                          'Platforms',
+                          'Plataformas',
                           style: TextStyle(color: Colors.white70),
                         ),
                         Wrap(
                           spacing: 8,
                           children: GamePlatform.values.map((p) {
-                            final label = p.name
-                                .replaceAllMapped(
-                                  RegExp(r'[A-Z]'),
-                                  (m) => ' ${m.group(0)}',
-                                )
-                                .trim();
+                            final label = p.label;
                             final isSelected = selectedPlatforms.contains(p);
+
                             return FilterChip(
                               label: Text(
                                 label,
@@ -242,13 +233,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                               selected: isSelected,
                               selectedColor: Colors.amber[300],
-                              backgroundColor: Colors.transparent,
+                              backgroundColor: Colors.blueGrey[700],
                               onSelected: (v) {
                                 setStateSB(() {
-                                  if (v)
+                                  if (v) {
                                     selectedPlatforms.add(p);
-                                  else
+                                  } else {
                                     selectedPlatforms.remove(p);
+                                  }
                                 });
                               },
                             );
@@ -257,43 +249,46 @@ class _HomePageState extends State<HomePage> {
 
                         const SizedBox(height: 12),
 
-                        // Sort
+                        // Ordenação
                         const Text(
-                          'Sort by',
+                          'Ordenar por',
                           style: TextStyle(color: Colors.white70),
                         ),
-                        Row(
-                          children: SortParam.values.map((s) {
-                            final label =
-                                s.param[0].toUpperCase() + s.param.substring(1);
-                            return Expanded(
-                              child: RadioListTile<SortParam?>(
-                                value: s,
-                                groupValue: selectedSort,
-                                onChanged: (v) =>
-                                    setStateSB(() => selectedSort = v),
+
+                        RadioGroup<SortParam>(
+                          groupValue: selectedSort,
+                          onChanged: (value) {
+                            setStateSB(() => selectedSort = value);
+                          },
+                          child: Column(
+                            children: SortParam.values.map((s) {
+                              return ListTile(
+                                dense: true,
+                                minVerticalPadding: 0,
+                                contentPadding: EdgeInsets.zero,
                                 title: Text(
-                                  label,
+                                  s.label,
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                activeColor: Colors.amber[300],
-                                dense: true,
-                              ),
-                            );
-                          }).toList(),
+                                trailing: Radio<SortParam>(value: s),
+                                onTap: () => setStateSB(() => selectedSort = s),
+                              );
+                            }).toList(),
+                          ),
                         ),
 
                         const SizedBox(height: 4),
+
                         Row(
                           children: [
                             const Text(
-                              'Descending',
+                              'Decrescente',
                               style: TextStyle(color: Colors.white70),
                             ),
                             const Spacer(),
                             Switch(
                               value: descending,
-                              activeColor: Colors.amber[300],
+                              activeThumbColor: Colors.amber[300],
                               onChanged: (v) =>
                                   setStateSB(() => descending = v),
                             ),
@@ -305,13 +300,13 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                onPressed: () => Navigator.pop(context),
                                 style: OutlinedButton.styleFrom(
                                   side: BorderSide(color: Colors.white24),
+                                ),
+                                child: const Text(
+                                  'Cancelar',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),
@@ -319,7 +314,6 @@ class _HomePageState extends State<HomePage> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // Apply selections
                                   setState(() {
                                     _searchParams.platforms =
                                         selectedPlatforms.isEmpty
@@ -334,11 +328,11 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.of(context).pop();
                                   _fetchGames();
                                 },
-                                child: const Text('Apply'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.amber[300],
                                   foregroundColor: Colors.black,
                                 ),
+                                child: const Text('Aplicar'),
                               ),
                             ),
                           ],

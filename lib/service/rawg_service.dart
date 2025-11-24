@@ -4,22 +4,27 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 enum GamePlatform {
-  pc(4),
-  playstation5(187),
-  xboxSeriesX(186),
-  nintendoSwitch(7);
+  playstation5(187, "PlayStation 5"),
+  playstation4(18, "PlayStation 4"),
+  xboxSeries(186, "Xbox Series S/X"),
+  xboxOne(1, "Xbox One"),
+  nintendoSwitch(7, "Nintendo Switch");
 
   final int id;
-  const GamePlatform(this.id);
+  final String label;
+
+  const GamePlatform(this.id, this.label);
 }
 
 enum SortParam {
-  name('name'),
-  released('released'),
-  rating('rating');
+  name('name', "Nome"),
+  released('released', "Data de lançamento"),
+  rating('rating', "Avaliação");
 
   final String param;
-  const SortParam(this.param);
+  final String label;
+
+  const SortParam(this.param, this.label);
 }
 
 class SearchParams {
@@ -53,14 +58,14 @@ class RawgService {
 
       final platformsParam = sp?.platforms != null && sp!.platforms!.isNotEmpty
           ? "&platforms=${sp.platforms!.map((p) => p.id).join(',')}"
-          : "&platforms=4,187,186,7";
+          : "&platforms=187,186,7";
 
       final sortParam = sp?.sortBy != null
           ? "&ordering=${sp!.descending == true ? '-' : ''}${sp.sortBy!.param}"
           : "";
 
       final uri = Uri.parse(
-        '$baseUrl/games?key=$apiKey&page=$page&page_size=50'
+        '$baseUrl/games?key=$apiKey&page=$page&page_size=100&exclude_additions=true'
         '$searchParam'
         '$platformsParam'
         '$sortParam',
@@ -71,12 +76,8 @@ class RawgService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        final filtered = (data['results'] as List)
-            .where((game) => (game['rating'] ?? 0) > 0)
-            .toList();
-
         return GamesResponse(
-          filtered.cast<Map<String, dynamic>>(),
+          (data['results'] as List).cast<Map<String, dynamic>>(),
           data['next'] != null && data['next'].toString().isNotEmpty,
         );
       } else {
