@@ -106,4 +106,21 @@ class RawgService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> fetchGameMovies(int gameId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/games/$gameId/movies?key=$apiKey'),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Falhar ao carragar trailers');
+      }
+    } on SocketException {
+      throw Exception('Erro de conexão com a Internet');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

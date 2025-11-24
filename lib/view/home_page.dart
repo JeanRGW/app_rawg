@@ -1,4 +1,5 @@
 import 'package:app_rawg/service/rawg_service.dart';
+import 'package:app_rawg/view/game_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -381,120 +382,129 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Card _gameCard(Map<String, dynamic> game) {
+  Widget _gameCard(Map<String, dynamic> game) {
     final imageUrl = game['background_image'];
 
-    return Card(
-      color: Colors.blueGrey[700],
-      elevation: 6,
-      shadowColor: Colors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.black.withAlpha(70), width: 1.2),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => GamePage(gameId: game['id'])),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Card(
+        color: Colors.blueGrey[700],
+        elevation: 6,
+        shadowColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.black.withAlpha(70), width: 1.2),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-        children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: imageUrl != null && imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return _loadingAnimation();
-                          },
-                        )
-                      : _placeholderImage(),
-                ),
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: imageUrl != null && imageUrl.isNotEmpty
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return _loadingAnimation();
+                            },
+                          )
+                        : _placeholderImage(),
+                  ),
 
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withAlpha(50),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withAlpha(50),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Colors.white.withAlpha(80),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            '${game['rating'] ?? 'N/A'}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          Icon(Icons.star, size: 16, color: Colors.amber[800]),
                         ],
                       ),
                     ),
                   ),
-                ),
+                ],
+              ),
+            ),
 
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: Colors.white.withAlpha(80),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${game['rating'] ?? 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        Icon(Icons.star, size: 16, color: Colors.amber[800]),
-                      ],
-                    ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                game['name'] ?? 'Nome Desconhecido',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  height: 1.15,
+                ),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.withAlpha(60),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.black.withAlpha(60),
+                    width: 1,
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Text(
-              game['name'] ?? 'Nome Desconhecido',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                height: 1.15,
-              ),
-              textAlign: TextAlign.center,
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey.withAlpha(60),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.black.withAlpha(60), width: 1),
-              ),
-              child: Text(
-                '${game['released'] ?? 'sem data.'}',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-                textAlign: TextAlign.center,
+                child: Text(
+                  '${game['released'] ?? 'sem data.'}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
