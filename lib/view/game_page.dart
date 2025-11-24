@@ -82,7 +82,8 @@ class _GamePageState extends State<GamePage> {
     final name = _game!['name'];
     final rating = _game!['rating'];
     final released = _game!['released'] ?? 'Sem data';
-    final description = _game!['description_raw'] ?? "Sem descrição.";
+    final trailerUrl = _gameMovies?["results"][0]?["data"]?["max"];
+
     final genres =
         (_game!['genres'] as List?)
             ?.map((e) => e['name'].toString())
@@ -91,7 +92,12 @@ class _GamePageState extends State<GamePage> {
     final tags =
         (_game!['tags'] as List?)?.map((e) => e['name'].toString()).toList() ??
         [];
-    final trailerUrl = _gameMovies?["results"][0]?["data"]?["max"];
+
+    final rawDescription = _game!['description_raw'];
+    final description =
+        (rawDescription == null || rawDescription.toString().trim().isEmpty)
+        ? "Sem descrição."
+        : rawDescription.toString();
 
     return SingleChildScrollView(
       child: Column(
