@@ -65,7 +65,7 @@ class RawgService {
           : "";
 
       final uri = Uri.parse(
-        '$baseUrl/games?key=$apiKey&page=$page&page_size=100&exclude_additions=true'
+        '$baseUrl/games?key=$apiKey&page=$page&page_size=20&exclude_additions=true'
         '$searchParam'
         '$platformsParam'
         '$sortParam',
