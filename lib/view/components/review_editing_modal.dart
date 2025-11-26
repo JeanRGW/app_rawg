@@ -49,7 +49,7 @@ class _ReviewModalContentState extends State<ReviewModalContent> {
     super.initState();
 
     hoursController = TextEditingController(
-      text: widget.review?.hoursPlayed.toString() ?? "",
+      text: widget.review?.hoursPlayed.toString() ?? "0",
     );
 
     commentController = TextEditingController(
@@ -202,6 +202,14 @@ class _ReviewModalContentState extends State<ReviewModalContent> {
     if (selectedPlatformId == null || selectedProgress == null) {
       setState(() {
         _errorMsg = "Selecione plataforma e progresso!";
+      });
+      return;
+    }
+
+    if (double.tryParse(hoursController.text) == null ||
+        double.tryParse(hoursController.text)!.isNegative) {
+      setState(() {
+        _errorMsg = "Entrada de números inválida, utilize apenas números e '.'";
       });
       return;
     }
