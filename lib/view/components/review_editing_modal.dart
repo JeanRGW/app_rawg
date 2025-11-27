@@ -1,6 +1,6 @@
+import 'package:app_rawg/database/repository/review_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:app_rawg/database/model/review_model.dart';
-import 'package:app_rawg/database/helper/review_helper.dart';
 
 Future<Review?> showReviewEditingModal(
   BuildContext context, {
@@ -29,7 +29,7 @@ class ReviewModalContent extends StatefulWidget {
 }
 
 class _ReviewModalContentState extends State<ReviewModalContent> {
-  final ReviewHelper _helper = ReviewHelper();
+  final ReviewRepository _repo = ReviewRepository();
 
   late TextEditingController hoursController;
   late TextEditingController commentController;
@@ -228,9 +228,9 @@ class _ReviewModalContentState extends State<ReviewModalContent> {
     );
 
     if (widget.review == null) {
-      await _helper.saveReview(review);
+      await _repo.saveReview(review);
     } else {
-      await _helper.updateReview(review);
+      await _repo.updateReview(review);
     }
 
     if (!mounted) return;

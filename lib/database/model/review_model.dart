@@ -45,7 +45,7 @@ class Review {
     this.comment,
   });
 
-  int? id;
+  String? id;
   int gameId;
   int playedPlatform;
   GameProgress progressStatus;
@@ -57,7 +57,7 @@ class Review {
   String? comment;
 
   Review.fromMap(Map<String, dynamic> map)
-    : id = map[idColumn],
+    : id = map[idColumn]?.toString(),
       gameId = map[gameIdColumn],
       playedPlatform = map[platformColumn],
       progressStatus = GameProgress.fromId(map[progressStatusColumn]),

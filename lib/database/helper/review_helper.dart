@@ -43,7 +43,10 @@ class ReviewHelper {
 
   Future<Review> saveReview(Review review) async {
     final dbReview = await db;
-    review.id = await dbReview.insert(gameReviewTable, review.toMap());
+    review.id = (await dbReview.insert(
+      gameReviewTable,
+      review.toMap(),
+    )).toString();
     return review;
   }
 
@@ -78,7 +81,7 @@ class ReviewHelper {
     return maps.map((m) => Review.fromMap(m)).toList();
   }
 
-  Future<int> deleteReview(int id) async {
+  Future<int> deleteReview(String id) async {
     final dbReview = await db;
 
     return await dbReview.delete(

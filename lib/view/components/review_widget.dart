@@ -1,5 +1,5 @@
-import 'package:app_rawg/database/helper/review_helper.dart';
 import 'package:app_rawg/database/model/review_model.dart';
+import 'package:app_rawg/database/repository/review_repository.dart';
 import 'package:app_rawg/view/components/review_editing_modal.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,7 @@ class ReviewWidget extends StatefulWidget {
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
-  final ReviewHelper reviewHelper = ReviewHelper();
+  final ReviewRepository _repo = ReviewRepository();
   Review? review;
 
   @override
@@ -23,7 +23,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   }
 
   void loadReview() async {
-    Review? review = await reviewHelper.getReviewByGameId(widget.game["id"]);
+    Review? review = await _repo.getReviewByGameId(widget.game["id"]);
 
     setState(() {
       this.review = review;
@@ -231,7 +231,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                               ),
                             );
                             if (confirmed == true) {
-                              await reviewHelper.deleteReview(review.id!);
+                              await _repo.deleteReview(review.id!);
 
                               if (!mounted) return;
 

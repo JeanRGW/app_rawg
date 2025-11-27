@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "37627104048",
+    "project_id": "app-rawg",
+    "storage_bucket": "app-rawg.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37627104048:android:0086d596eb1c4b34f0d6f5",
+        "android_client_info": {
+          "package_name": "com.example.app_rawg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEnkoAfdcphzWv3WV-2a4sfZbq-RFdqKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

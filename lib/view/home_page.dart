@@ -1,5 +1,7 @@
 import 'package:app_rawg/service/rawg_service.dart';
+import 'package:app_rawg/view/auth_page.dart';
 import 'package:app_rawg/view/game_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -103,6 +105,21 @@ class _HomePageState extends State<HomePage> {
             bottom: Radius.elliptical(40, 10),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+
+              AuthPage.isGuest = false;
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const AuthPage()),
+              );
+            },
+            icon: Icon(Icons.logout, color: Colors.white),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(8.0),

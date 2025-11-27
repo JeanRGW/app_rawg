@@ -1,5 +1,5 @@
-import 'package:app_rawg/database/helper/review_helper.dart';
 import 'package:app_rawg/database/model/review_model.dart';
+import 'package:app_rawg/database/repository/review_repository.dart';
 import 'package:app_rawg/service/rawg_service.dart';
 import 'package:app_rawg/view/components/review_widget.dart';
 import 'package:app_rawg/view/components/video_player_item.dart';
@@ -16,7 +16,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   final RawgService _rawgService = RawgService();
-  final ReviewHelper _reviewHelper = ReviewHelper();
+  final ReviewRepository _repo = ReviewRepository();
 
   bool _loading = true;
   bool _moviesLoading = false;
@@ -35,7 +35,7 @@ class _GamePageState extends State<GamePage> {
   Future<void> _loadGame() async {
     try {
       final result = await _rawgService.fetchGameDetails(widget.gameId);
-      review = await _reviewHelper.getReviewByGameId(widget.gameId);
+      review = await _repo.getReviewByGameId(widget.gameId);
       _game = result;
 
       if ((result["movies_count"] ?? 0) > 0) {
