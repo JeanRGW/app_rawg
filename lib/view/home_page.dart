@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
           content: Text("Erro ao carregar jogos: $e"),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => {Navigator.of(context).pop(), _fetchGames()},
               child: const Text("OK"),
             ),
           ],
@@ -106,6 +106,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
+          _userPopup(),
           IconButton(
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -532,6 +533,44 @@ class _HomePageState extends State<HomePage> {
       child: const Center(
         child: Icon(Icons.image_not_supported, color: Colors.white54, size: 40),
       ),
+    );
+  }
+
+  Widget _userPopup() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    String label;
+    if (AuthPage.isGuest) {
+      label = "Visitante";
+    } else {
+      label = user?.email ?? "Desconhecido";
+    }
+
+    return PopupMenuButton(
+      icon: const Icon(Icons.person, color: Colors.white),
+      color: Colors.blueGrey[800],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Usuário atual",
+                style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
